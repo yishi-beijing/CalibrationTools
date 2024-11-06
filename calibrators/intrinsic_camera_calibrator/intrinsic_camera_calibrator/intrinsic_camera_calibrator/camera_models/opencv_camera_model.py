@@ -116,9 +116,9 @@ class PolynomialOpenCVCameraModel(OpenCVCameraModel):
         width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
-        self.flags |= cv2.CALIB_FIX_K1
-        self.flags |= cv2.CALIB_FIX_K2
-        self.flags |= cv2.CALIB_FIX_K3
+        self.flags |= cv2.CALIB_FIX_K4
+        self.flags |= cv2.CALIB_FIX_K5
+        self.flags |= cv2.CALIB_FIX_K6
 
 
 class RationalOpenCVCameraModel(PolynomialOpenCVCameraModel):
@@ -129,13 +129,10 @@ class RationalOpenCVCameraModel(PolynomialOpenCVCameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None,
+        width: Optional[int] = None
     ):
         super().__init__(k, d, height, width)
         self.flags |= cv2.CALIB_RATIONAL_MODEL
-        self.flags |= cv2.CALIB_FIX_K4
-        self.flags |= cv2.CALIB_FIX_K5
-        self.flags |= cv2.CALIB_FIX_K6
 
 
 class PrismOpenCVCameraModel(RationalOpenCVCameraModel):
