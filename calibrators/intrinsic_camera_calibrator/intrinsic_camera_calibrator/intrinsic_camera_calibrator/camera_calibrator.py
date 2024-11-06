@@ -56,10 +56,10 @@ from intrinsic_camera_calibrator.calibrators.calibrator import CalibratorEnum
 from intrinsic_camera_calibrator.calibrators.calibrator_factory import make_calibrator
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
+from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
+from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModelEnum
 from intrinsic_camera_calibrator.data_collector import CollectionStatus
 from intrinsic_camera_calibrator.data_collector import DataCollector
 from intrinsic_camera_calibrator.data_sources.data_source import DataSource
@@ -127,8 +127,9 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
         self.board_parameters: ParameterizedClass = None
         self.detector: BoardDetector = None
         self.data_collector = DataCollector(self.cfg["data_collector"])
-        self.calibrator_dict: Dict[CalibratorEnum,
-                                   Dict[CameraModelEnum, Calibrator]] = defaultdict(dict)
+        self.calibrator_dict: Dict[CalibratorEnum, Dict[CameraModelEnum, Calibrator]] = defaultdict(
+            dict
+        )
 
         self.image_view_mode = ImageViewMode.SOURCE_UNRECTIFIED
         self.paused = False
@@ -144,7 +145,8 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
 
             for camera_model_type in self.camera_models[calibrator_type.value["name"]]:
                 calibrator = make_calibrator(
-                    calibrator_type, camera_model_type, lock=self.lock, cfg=calibrator_cfg)
+                    calibrator_type, camera_model_type, lock=self.lock, cfg=calibrator_cfg
+                )
                 self.calibrator_dict[calibrator_type][camera_model_type] = calibrator
 
                 calibrator.moveToThread(self.calibration_thread)  # comment this to debug
@@ -370,7 +372,8 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
             camera_model_type = self.camera_model_type_combobox.currentData()
 
             data_collection_parameters_view = ParameterView(
-                self.calibrator_dict[calibrator_type][camera_model_type])
+                self.calibrator_dict[calibrator_type][camera_model_type]
+            )
             data_collection_parameters_view.closed.connect(on_parameters_view_closed)
 
         def on_calibration_clicked():
@@ -414,13 +417,15 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
             calibrator_type = self.calibrator_type_combobox.currentData()
             for camera_model_type in self.camera_models[calibrator_type.value["name"]]:
                 self.camera_model_type_combobox.addItem(
-                    camera_model_type.value["display"], camera_model_type)
+                    camera_model_type.value["display"], camera_model_type
+                )
 
             if "camera_model_type" in self.cfg:
                 try:
                     self.camera_model_type_combobox.setCurrentIndex(
-                        calibrator_type.value["name"].from_name(
-                            self.cfg["camera_model_type"]).get_id()
+                        calibrator_type.value["name"]
+                        .from_name(self.cfg["camera_model_type"])
+                        .get_id()
                     )
                 except Exception as e:
                     logging.error(f"Invalid camera_model_type: {e}")
@@ -431,7 +436,9 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
             calibrator_type = self.calibrator_type_combobox.currentData()
             camera_model_type = self.camera_model_type_combobox.currentData()
             if calibrator_type is not None and camera_model_type is not None:
-                self.current_camera_model = self.calibrator_dict[calibrator_type][camera_model_type].model
+                self.current_camera_model = self.calibrator_dict[calibrator_type][
+                    camera_model_type
+                ].model
 
         self.calibration_parameters_button.clicked.connect(on_parameters_button_clicked)
 

@@ -112,10 +112,7 @@ class BoardDetection:
         if self._cached_camera_model is None:
             self._precompute_single_shot_model(model)
 
-        if (
-            model == self._cached_camera_model
-            and self._cached_reprojection_errors is not None
-        ):
+        if model == self._cached_camera_model and self._cached_reprojection_errors is not None:
             return self._cached_reprojection_errors
 
         self._cached_camera_model = model

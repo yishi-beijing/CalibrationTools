@@ -20,20 +20,21 @@ import threading
 from typing import Dict
 from typing import List
 
-import cv2
-import numpy as np
-
 from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
+import cv2
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
 from intrinsic_camera_calibrator.calibrators.calibrator import Calibrator
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
 from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModel
 from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
 from intrinsic_camera_calibrator.parameter import Parameter
+import numpy as np
 
 
 class CeresCalibrator(Calibrator):
-    def __init__(self, camera_model_type: CeresCameraModelEnum, lock: threading.RLock, cfg: Dict = {}):
+    def __init__(
+        self, camera_model_type: CeresCameraModelEnum, lock: threading.RLock, cfg: Dict = {}
+    ):
         super().__init__(camera_model_type, lock, cfg)
         self.set_parameters(**cfg)
 
@@ -49,7 +50,7 @@ class CeresCalibrator(Calibrator):
             object_points_list=[
                 detection.get_flattened_object_points() for detection in detections
             ],
-            image_points_list=[detection.get_flattened_image_points() for detection in detections]
+            image_points_list=[detection.get_flattened_image_points() for detection in detections],
         )
 
         return camera_model

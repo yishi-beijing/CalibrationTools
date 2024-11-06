@@ -126,7 +126,9 @@ def plot_calibration_data_statistics(
 
         return pixel_occupancy, tilt_occupancy, np.array(z_list)
 
-    def plot_detection_set(i: int, name: str, detections: List[BoardDetection], camera_model: CameraModel):
+    def plot_detection_set(
+        i: int, name: str, detections: List[BoardDetection], camera_model: CameraModel
+    ):
         if len(detections) == 0:
             return
 
@@ -172,9 +174,13 @@ def plot_calibration_data_statistics(
         )
 
     plot_detection_set(0, "Training", training_detections, calibrated_model)
-    plot_detection_set(1, "Pre rejection inliers", pre_rejection_inlier_detections, calibrated_model)
+    plot_detection_set(
+        1, "Pre rejection inliers", pre_rejection_inlier_detections, calibrated_model
+    )
     plot_detection_set(2, "Subsampled", subsampled_detections, calibrated_model)
-    plot_detection_set(3, "Post rejection inliers", post_rejection_inlier_detections, calibrated_model)
+    plot_detection_set(
+        3, "Post rejection inliers", post_rejection_inlier_detections, calibrated_model
+    )
     plot_detection_set(4, "Evaluation", evaluation_detections, calibrated_model)
     plt.show()
 
@@ -231,7 +237,9 @@ def plot_calibration_results_statistics(
 
         return pixel_errors_mean, pixel_errors_std, tilt_errors_mean, tilt_errors_std
 
-    def plot_detection_set(j: int, name: str, detections: List[BoardDetection], camera_model: CameraModel):
+    def plot_detection_set(
+        j: int, name: str, detections: List[BoardDetection], camera_model: CameraModel
+    ):
         if len(detections) == 0:
             return
 
@@ -282,7 +290,9 @@ def plot_calibration_results_statistics(
         )
         plt.colorbar(tilt_rms_std_ax, ax=axes1[j, 3])
 
-    def plot_calibration_vs_single_shot_calibration(j, name, detections: List[BoardDetection], camera_model: CameraModel):
+    def plot_calibration_vs_single_shot_calibration(
+        j, name, detections: List[BoardDetection], camera_model: CameraModel
+    ):
         label = np.array([str(i) for i in range(len(detections))])
 
         calibrated_errors = np.array(
@@ -319,8 +329,12 @@ def plot_calibration_results_statistics(
     plot_detection_set(1, "Inliers", inlier_detections, calibrated_model)
     plot_detection_set(2, "Evaluation", evaluation_detections, calibrated_model)
 
-    plot_calibration_vs_single_shot_calibration(0, "Training", training_detections, calibrated_model)
+    plot_calibration_vs_single_shot_calibration(
+        0, "Training", training_detections, calibrated_model
+    )
     plot_calibration_vs_single_shot_calibration(1, "Inliers", inlier_detections, calibrated_model)
-    plot_calibration_vs_single_shot_calibration(2, "Evaluation", evaluation_detections, calibrated_model)
+    plot_calibration_vs_single_shot_calibration(
+        2, "Evaluation", evaluation_detections, calibrated_model
+    )
 
     plt.show()

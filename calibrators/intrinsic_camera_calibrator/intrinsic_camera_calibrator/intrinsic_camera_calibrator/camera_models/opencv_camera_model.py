@@ -18,16 +18,23 @@ from typing import List
 from typing import Optional
 
 import cv2
-import numpy as np
-
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
 from intrinsic_camera_calibrator.parameter import Parameter
+import numpy as np
 
 
 class OpenCVCameraModelEnum(CameraModelEnum):
-    OPENCV_POLYNOMIAL = {"name": "opencv_polynomial", "display": "OpenCV Polynomial", "calibrator": "opencv"}
-    OPENCV_RATIONAL = {"name": "opencv_rational", "display": "OpenCV Rational", "calibrator": "opencv"}
+    OPENCV_POLYNOMIAL = {
+        "name": "opencv_polynomial",
+        "display": "OpenCV Polynomial",
+        "calibrator": "opencv",
+    }
+    OPENCV_RATIONAL = {
+        "name": "opencv_rational",
+        "display": "OpenCV Rational",
+        "calibrator": "opencv",
+    }
     OPENCV_PRISM = {"name": "opencv_prism", "display": "OpenCV Prism", "calibrator": "opencv"}
 
 
@@ -39,7 +46,7 @@ class OpenCVCameraModel(CameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None
+        width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
         self.flags = 0
@@ -48,9 +55,7 @@ class OpenCVCameraModel(CameraModel):
         # self.flags |= cv2.CALIB_ZERO_TANGENT_DIST
 
     def _calibrate_impl(
-        self,
-        object_points_list: List[np.array],
-        image_points_list: List[np.array]
+        self, object_points_list: List[np.array], image_points_list: List[np.array]
     ):
         """Calibrate OpenCV camera model."""
         object_points_list = [
@@ -108,7 +113,7 @@ class PolynomialOpenCVCameraModel(OpenCVCameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None
+        width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
         self.flags |= cv2.CALIB_FIX_K1
@@ -124,7 +129,7 @@ class RationalOpenCVCameraModel(PolynomialOpenCVCameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None
+        width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
         self.flags |= cv2.CALIB_RATIONAL_MODEL
@@ -141,7 +146,7 @@ class PrismOpenCVCameraModel(RationalOpenCVCameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None
+        width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
         self.flags |= cv2.CALIB_THIN_PRISM_MODEL

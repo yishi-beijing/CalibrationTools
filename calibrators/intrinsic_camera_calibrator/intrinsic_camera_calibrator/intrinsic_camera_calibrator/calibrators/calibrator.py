@@ -37,8 +37,8 @@ from intrinsic_camera_calibrator.calibrators.utils import add_detection
 from intrinsic_camera_calibrator.calibrators.utils import get_entropy
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
-from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.data_collector import DataCollector
 from intrinsic_camera_calibrator.parameter import Parameter
 from intrinsic_camera_calibrator.parameter import ParameterizedClass
@@ -81,12 +81,17 @@ class Calibrator(ParameterizedClass, QObject):
     partial_calibration_request = Signal(object, object)
     partial_calibration_results_signal = Signal(object)
 
-    def __init__(self, camera_model_type: CameraModelEnum, lock: threading.RLock, cfg: Optional[Dict] = {}):
+    def __init__(
+        self, camera_model_type: CameraModelEnum, lock: threading.RLock, cfg: Optional[Dict] = {}
+    ):
         ParameterizedClass.__init__(self, lock)
         QObject.__init__(self, None)
         self.camera_model_type = camera_model_type
-        self.model = make_opencv_camera_model(
-            camera_model_type) if camera_model_type.value["calibrator"] == "opencv" else make_ceres_camera_model(camera_model_type)
+        self.model = (
+            make_opencv_camera_model(camera_model_type)
+            if camera_model_type.value["calibrator"] == "opencv"
+            else make_ceres_camera_model(camera_model_type)
+        )
 
         self.use_ransac_pre_rejection = Parameter(bool, value=True, min_value=False, max_value=True)
         self.pre_rejection_iterations = Parameter(int, value=100, min_value=1, max_value=100)

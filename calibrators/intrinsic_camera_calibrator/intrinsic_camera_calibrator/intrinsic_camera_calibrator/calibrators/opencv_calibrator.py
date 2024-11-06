@@ -22,16 +22,18 @@ from typing import List
 import cv2
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
 from intrinsic_camera_calibrator.calibrators.calibrator import Calibrator
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.parameter import Parameter
 
 
 class OpenCVCalibrator(Calibrator):
     """Wrapper of the opencv's camera calibration routine."""
 
-    def __init__(self, camera_model_type: OpenCVCameraModelEnum, lock: threading.RLock, cfg: Dict = {}):
+    def __init__(
+        self, camera_model_type: OpenCVCameraModelEnum, lock: threading.RLock, cfg: Dict = {}
+    ):
         super().__init__(camera_model_type, lock, cfg)
         # self.radial_distortion_coefficients = Parameter(int, value=2, min_value=0, max_value=6)
         # self.use_tangential_distortion = Parameter(
@@ -54,7 +56,7 @@ class OpenCVCalibrator(Calibrator):
             object_points_list=[
                 detection.get_flattened_object_points() for detection in detections
             ],
-            image_points_list=[detection.get_flattened_image_points() for detection in detections]
+            image_points_list=[detection.get_flattened_image_points() for detection in detections],
         )
 
         return camera_model

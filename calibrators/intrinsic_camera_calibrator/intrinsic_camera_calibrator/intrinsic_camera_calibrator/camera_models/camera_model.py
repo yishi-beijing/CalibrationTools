@@ -14,9 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-
 from enum import Enum
+import logging
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -84,13 +83,15 @@ class CameraModel:
         height: int,
         width: int,
         object_points_list: List[np.array],
-        image_points_list: List[np.array]
+        image_points_list: List[np.array],
     ):
         """Calibrate the model."""
         assert len(object_points_list) == len(image_points_list)
         self.height = height
         self.width = width
-        logging.warning(f"Camera model: {self.__class__.__name__}")  # TODO(amadeuszsz): remove before opening PR
+        logging.warning(
+            f"Camera model: {self.__class__.__name__}"
+        )  # TODO(amadeuszsz): remove before opening PR
         self._calibrate_impl(object_points_list, image_points_list)
 
     def get_pose(
@@ -204,7 +205,9 @@ class CameraModel:
             d["distortion_model"]["rows"], d["distortion_model"]["cols"]
         )
 
-    def _calibrate_impl(self, object_points_list: List[np.array], image_points_list: List[np.array]):
+    def _calibrate_impl(
+        self, object_points_list: List[np.array], image_points_list: List[np.array]
+    ):
         """Abstract method to calibrate the camera model."""
         raise NotImplementedError
 
@@ -216,28 +219,29 @@ class CameraModel:
         """Abstract method to rectify the input image."""
         raise NotImplementedError
 
+
 ####################################################################################################
-    # def _calibrate_impl(
-    #     self,
-    #     object_points_list: List[np.array],
-    #     image_points_list: List[np.array]
-    # ):
-    #     """Calibrate OpenCV camera model."""
+# def _calibrate_impl(
+#     self,
+#     object_points_list: List[np.array],
+#     image_points_list: List[np.array]
+# ):
+#     """Calibrate OpenCV camera model."""
 
-    #     object_points_list = [
-    #         object_points.astype(np.float32).reshape(-1, 3) for object_points in object_points_list
-    #     ]
-    #     image_points_list = [
-    #         image_points.astype(np.float32).reshape(-1, 1, 2) for image_points in image_points_list
-    #     ]
+#     object_points_list = [
+#         object_points.astype(np.float32).reshape(-1, 3) for object_points in object_points_list
+#     ]
+#     image_points_list = [
+#         image_points.astype(np.float32).reshape(-1, 1, 2) for image_points in image_points_list
+#     ]
 
-    #     _, self.k, self.d, rvecs, tvecs = cv2.calibrateCamera(
-    #         object_points_list,
-    #         image_points_list,
-    #         (self.width, self.height),
-    #         cameraMatrix=None,
-    #         distCoeffs=None
-    #     )
+#     _, self.k, self.d, rvecs, tvecs = cv2.calibrateCamera(
+#         object_points_list,
+#         image_points_list,
+#         (self.width, self.height),
+#         cameraMatrix=None,
+#         distCoeffs=None
+#     )
 ####################################################################################################
 
 
