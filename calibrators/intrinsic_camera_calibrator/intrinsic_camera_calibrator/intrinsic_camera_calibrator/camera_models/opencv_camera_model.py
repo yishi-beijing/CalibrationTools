@@ -129,7 +129,7 @@ class RationalOpenCVCameraModel(PolynomialOpenCVCameraModel):
         k: Optional[np.array] = None,
         d: Optional[np.array] = None,
         height: Optional[int] = None,
-        width: Optional[int] = None
+        width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
         self.flags |= cv2.CALIB_RATIONAL_MODEL
