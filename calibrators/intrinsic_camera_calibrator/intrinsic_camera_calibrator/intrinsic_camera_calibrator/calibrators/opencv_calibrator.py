@@ -22,51 +22,39 @@ from typing import List
 import cv2
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
 from intrinsic_camera_calibrator.calibrators.calibrator import Calibrator
-from intrinsic_camera_calibrator.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
+from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModelEnum
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_opencv_camera_model
 from intrinsic_camera_calibrator.parameter import Parameter
 
 
 class OpenCVCalibrator(Calibrator):
     """Wrapper of the opencv's camera calibration routine."""
 
-    def __init__(self, lock: threading.RLock, cfg: Dict = {}):
-        super().__init__(lock, cfg)
-
-        self.radial_distortion_coefficients = Parameter(int, value=2, min_value=0, max_value=6)
-        self.use_tangential_distortion = Parameter(
-            bool, value=True, min_value=False, max_value=True
-        )
-        self.fix_principal_point = Parameter(bool, value=False, min_value=False, max_value=True)
-        self.fix_aspect_ratio = Parameter(bool, value=False, min_value=False, max_value=True)
+    def __init__(self, camera_model_type: OpenCVCameraModelEnum, lock: threading.RLock, cfg: Dict = {}):
+        super().__init__(camera_model_type, lock, cfg)
+        # self.radial_distortion_coefficients = Parameter(int, value=2, min_value=0, max_value=6)
+        # self.use_tangential_distortion = Parameter(
+        #     bool, value=True, min_value=False, max_value=True
+        # )
+        # self.fix_principal_point = Parameter(bool, value=False, min_value=False, max_value=True)
+        # self.fix_aspect_ratio = Parameter(bool, value=False, min_value=False, max_value=True)
 
         self.set_parameters(**cfg)
 
-    def _calibration_impl(self, detections: List[BoardDetection]) -> CameraModel:
+    def _calibration_impl(self, detections: List[BoardDetection]) -> OpenCVCameraModel:
         """Implement the calibrator interface."""
-        flags = 0
-        flags |= cv2.CALIB_FIX_PRINCIPAL_POINT if self.fix_principal_point.value else 0
-        flags |= cv2.CALIB_FIX_ASPECT_RATIO if self.fix_principal_point.value else 0
-        flags |= cv2.CALIB_ZERO_TANGENT_DIST if not self.use_tangential_distortion.value else 0
-        flags |= cv2.CALIB_RATIONAL_MODEL if self.radial_distortion_coefficients.value > 3 else 0
-        flags |= cv2.CALIB_FIX_K6 if self.radial_distortion_coefficients.value < 6 else 0
-        flags |= cv2.CALIB_FIX_K5 if self.radial_distortion_coefficients.value < 5 else 0
-        flags |= cv2.CALIB_FIX_K4 if self.radial_distortion_coefficients.value < 4 else 0
-        flags |= cv2.CALIB_FIX_K3 if self.radial_distortion_coefficients.value < 3 else 0
-        flags |= cv2.CALIB_FIX_K2 if self.radial_distortion_coefficients.value < 2 else 0
-        flags |= cv2.CALIB_FIX_K1 if self.radial_distortion_coefficients.value < 1 else 0
-
         height = detections[0].get_image_height()
         width = detections[0].get_image_width()
 
-        camera_model = CameraModel()
+        camera_model = make_opencv_camera_model(self.camera_model_type)
         camera_model.calibrate(
             height=height,
             width=width,
             object_points_list=[
                 detection.get_flattened_object_points() for detection in detections
             ],
-            image_points_list=[detection.get_flattened_image_points() for detection in detections],
-            flags=flags,
+            image_points_list=[detection.get_flattened_image_points() for detection in detections]
         )
 
         return camera_model

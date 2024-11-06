@@ -15,22 +15,41 @@
 # limitations under the License.
 
 
+import logging
 import threading
 from typing import Dict
 from typing import List
 
+import cv2
+import numpy as np
+
+from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
 from intrinsic_camera_calibrator.calibrators.calibrator import Calibrator
-from intrinsic_camera_calibrator.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModel
+from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
 from intrinsic_camera_calibrator.parameter import Parameter
 
 
 class CeresCalibrator(Calibrator):
-    def __init__(self, lock: threading.RLock, cfg: Dict = {}):
-        super().__init__(lock, cfg)
-
-        self.some_parameter_name = Parameter(int, value=2, min_value=0, max_value=6)
+    def __init__(self, camera_model_type: CeresCameraModelEnum, lock: threading.RLock, cfg: Dict = {}):
+        super().__init__(camera_model_type, lock, cfg)
         self.set_parameters(**cfg)
 
-    def _calibration_impl(self, detections: List[BoardDetection]) -> CameraModel:
-        raise NotImplementedError
+    def _calibration_impl(self, detections: List[BoardDetection]) -> CeresCameraModel:
+        """Implement the calibrator interface."""
+        height = detections[0].get_image_height()
+        width = detections[0].get_image_width()
+
+        camera_model = make_ceres_camera_model(self.camera_model_type)
+        camera_model.calibrate(
+            height=height,
+            width=width,
+            object_points_list=[
+                detection.get_flattened_object_points() for detection in detections
+            ],
+            image_points_list=[detection.get_flattened_image_points() for detection in detections]
+        )
+
+        return camera_model

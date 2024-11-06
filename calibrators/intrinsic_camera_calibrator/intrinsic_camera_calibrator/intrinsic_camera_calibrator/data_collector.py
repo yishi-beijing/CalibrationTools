@@ -21,7 +21,7 @@ from typing import Tuple
 
 from PySide2.QtCore import Signal
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
-from intrinsic_camera_calibrator.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.parameter import Parameter
 from intrinsic_camera_calibrator.parameter import ParameterizedClass
 from intrinsic_camera_calibrator.types import CollectionStatus
@@ -457,7 +457,7 @@ class DataCollector(ParameterizedClass):
         self,
         image: np.array,
         detection: BoardDetection,
-        camera_model: Optional[CameraModel] = None,
+        camera_model: CameraModel,
         mode: OperationMode = OperationMode.CALIBRATION,
     ) -> CollectionStatus:
         """Evaluate if a detection should be added to either the training or evaluation dataset."""
@@ -470,7 +470,7 @@ class DataCollector(ParameterizedClass):
             accepted &= speed < self.max_allowed_speed
 
         if self.filter_by_reprojection_error:
-            reprojection_errors = detection.get_reprojection_errors()
+            reprojection_errors = detection.get_reprojection_errors(camera_model)
             reprojection_errors_norm = np.linalg.norm(reprojection_errors, axis=-1)
 
             reprojection_error_max = reprojection_errors_norm.max()

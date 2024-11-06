@@ -18,7 +18,7 @@
 from typing import List
 
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
-from intrinsic_camera_calibrator.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -77,7 +77,7 @@ def add_detection_errors(
     tilt_i = int(np.clip((0.5 * tilt_cells) * (tilt_x + 1), 0, tilt_cells - 1))
     tilt_j = int(np.clip((0.5 * tilt_cells) * (tilt_y + 1), 0, tilt_cells - 1))
 
-    errors = detection.get_reprojection_errors()
+    errors = detection.get_reprojection_errors(camera_model)
 
     tilt_errors[tilt_j][tilt_i].append(np.sqrt(np.power(errors, 2).mean()))
 
@@ -126,7 +126,7 @@ def plot_calibration_data_statistics(
 
         return pixel_occupancy, tilt_occupancy, np.array(z_list)
 
-    def plot_detection_set(i: int, name: str, detections: List[BoardDetection]):
+    def plot_detection_set(i: int, name: str, detections: List[BoardDetection], camera_model: CameraModel):
         if len(detections) == 0:
             return
 
@@ -171,11 +171,11 @@ def plot_calibration_data_statistics(
             linewidth=0.5,
         )
 
-    plot_detection_set(0, "Training", training_detections)
-    plot_detection_set(1, "Pre rejection inliers", pre_rejection_inlier_detections)
-    plot_detection_set(2, "Subsampled", subsampled_detections)
-    plot_detection_set(3, "Post rejection inliers", post_rejection_inlier_detections)
-    plot_detection_set(4, "Evaluation", evaluation_detections)
+    plot_detection_set(0, "Training", training_detections, calibrated_model)
+    plot_detection_set(1, "Pre rejection inliers", pre_rejection_inlier_detections, calibrated_model)
+    plot_detection_set(2, "Subsampled", subsampled_detections, calibrated_model)
+    plot_detection_set(3, "Post rejection inliers", post_rejection_inlier_detections, calibrated_model)
+    plot_detection_set(4, "Evaluation", evaluation_detections, calibrated_model)
     plt.show()
 
 
@@ -231,7 +231,7 @@ def plot_calibration_results_statistics(
 
         return pixel_errors_mean, pixel_errors_std, tilt_errors_mean, tilt_errors_std
 
-    def plot_detection_set(j: int, name: str, detections: List[BoardDetection]):
+    def plot_detection_set(j: int, name: str, detections: List[BoardDetection], camera_model: CameraModel):
         if len(detections) == 0:
             return
 
@@ -282,7 +282,7 @@ def plot_calibration_results_statistics(
         )
         plt.colorbar(tilt_rms_std_ax, ax=axes1[j, 3])
 
-    def plot_calibration_vs_single_shot_calibration(j, name, detections: List[BoardDetection]):
+    def plot_calibration_vs_single_shot_calibration(j, name, detections: List[BoardDetection], camera_model: CameraModel):
         label = np.array([str(i) for i in range(len(detections))])
 
         calibrated_errors = np.array(
@@ -290,7 +290,7 @@ def plot_calibration_results_statistics(
         )
         single_shot_errors = np.array(
             [
-                np.sqrt(np.power(detection.get_reprojection_errors(), 2).mean())
+                np.sqrt(np.power(detection.get_reprojection_errors(camera_model), 2).mean())
                 for detection in detections
             ]
         )
@@ -315,12 +315,12 @@ def plot_calibration_results_statistics(
         axes2[j].set_xticks(x_axis, label, rotation="vertical")
         axes2[j].legend()
 
-    plot_detection_set(0, "Training", training_detections)
-    plot_detection_set(1, "Inliers", inlier_detections)
-    plot_detection_set(2, "Evaluation", evaluation_detections)
+    plot_detection_set(0, "Training", training_detections, calibrated_model)
+    plot_detection_set(1, "Inliers", inlier_detections, calibrated_model)
+    plot_detection_set(2, "Evaluation", evaluation_detections, calibrated_model)
 
-    plot_calibration_vs_single_shot_calibration(0, "Training", training_detections)
-    plot_calibration_vs_single_shot_calibration(1, "Inliers", inlier_detections)
-    plot_calibration_vs_single_shot_calibration(2, "Evaluation", evaluation_detections)
+    plot_calibration_vs_single_shot_calibration(0, "Training", training_detections, calibrated_model)
+    plot_calibration_vs_single_shot_calibration(1, "Inliers", inlier_detections, calibrated_model)
+    plot_calibration_vs_single_shot_calibration(2, "Evaluation", evaluation_detections, calibrated_model)
 
     plt.show()

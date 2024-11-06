@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import cv2
-from intrinsic_camera_calibrator.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 import numpy as np
 import ruamel.yaml
 import yaml
