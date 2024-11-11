@@ -36,6 +36,7 @@ class CeresCalibrator(Calibrator):
         self.use_tangential_distortion = Parameter(
             bool, value=True, min_value=False, max_value=True
         )
+        self.opencv_calibration_num_frames = Parameter(int, value=5, min_value=0, max_value=20)
 
         self.set_parameters(**cfg)
 
@@ -52,6 +53,7 @@ class CeresCalibrator(Calibrator):
             radial_distortion_coefficients=self.radial_distortion_coefficients.value,
             rational_distortion_coefficients=self.rational_distortion_coefficients.value,
             use_tangential_distortion=self.use_tangential_distortion.value,
+            opencv_calibration_num_frames=self.opencv_calibration_num_frames.value,
         )
         camera_model.calibrate(
             height=height,
