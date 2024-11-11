@@ -18,24 +18,9 @@ from typing import List
 from typing import Optional
 
 from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
-import cv2
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
-from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import (
-    PolynomialOpenCVCameraModel,
-)
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import RationalOpenCVCameraModel
-from intrinsic_camera_calibrator.parameter import Parameter
+from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
 import numpy as np
-
-
-class CeresCameraModelEnum(CameraModelEnum):
-    CERES_POLYNOMIAL = {
-        "name": "ceres_polynomial",
-        "display": "Ceres Polynomial",
-        "calibrator": "ceres",
-    }
-    CERES_RATIONAL = {"name": "ceres_rational", "display": "Ceres Rational", "calibrator": "ceres"}
 
 
 class CeresCameraModel(CameraModel):
@@ -49,16 +34,38 @@ class CeresCameraModel(CameraModel):
         width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
+        self.radial_distortion_coefficients = 3
+        self.rational_distortion_coefficients = 3
+        self.use_tangential_distortion = True
 
-    def _init_calibrate_impl(self, **kwargs):
-        """Abstract method to initial calibration of the Ceres camera model."""
-        raise NotImplementedError
+    def init_calibrate(
+        self, object_points_list: List[np.array], image_points_list: List[np.array]
+    ) -> OpenCVCameraModel:
+        """Init calibrate of Ceres camera model."""
+        camera_model = OpenCVCameraModel()
+        camera_model.update_config(
+            radial_distortion_coefficients=self.radial_distortion_coefficients,
+            rational_distortion_coefficients=self.rational_distortion_coefficients,
+            use_tangential_distortion=self.use_tangential_distortion,
+        )
+        camera_model.calibrate(
+            height=self.height,
+            width=self.width,
+            object_points_list=object_points_list,
+            image_points_list=image_points_list,
+        )
+
+        num_coeffs = 5 if self.rational_distortion_coefficients == 0 else 8
+        if camera_model.d.size > num_coeffs:
+            camera_model.d = camera_model.d.reshape(-1, camera_model.d.size)[:, :num_coeffs]
+
+        return camera_model
 
     def _calibrate_impl(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
     ):
         """Calibrate Ceres camera model."""
-        camera_model = self._init_calibrate_impl(object_points_list, image_points_list)
+        camera_model = self.init_calibrate(object_points_list, image_points_list)
 
         rms_error, camera_matrix, dist_coeffs, rvecs, tvecs = calibrate(
             object_points_list=object_points_list,
@@ -74,97 +81,14 @@ class CeresCameraModel(CameraModel):
         self.k = camera_matrix
         self.d = dist_coeffs
 
-    def _get_undistorted_camera_model_impl(self, alpha: float):
-        """Compute the undistorted version of the camera model."""
-        undistorted_k, _ = cv2.getOptimalNewCameraMatrix(
-            self.k, self.d, (self.width, self.height), alpha
-        )
-
-        return CameraModel(
-            k=undistorted_k, d=np.zeros_like(self.d), height=self.height, width=self.width
-        )
-
-    def _rectify_impl(self, img: np.array, alpha=0.0) -> np.array:
-        """Rectifies an image using the current camera model. Alpha is a value in the [0,1] range to regulate how the rectified image is cropped. 0 means that all the pixels in the rectified image are valid whereas 1 keeps all the original pixels from the unrectified image into the rectifies one, filling with zeroes the invalid pixels."""
-        if np.abs(self.d).sum() == 0:
-            return img
-
-        if self._cached_undistorted_model is None or alpha != self._cached_undistortion_alpha:
-            self._cached_undistortion_alpha = alpha
-            self._cached_undistorted_model = self.get_undistorted_camera_model(alpha=alpha)
-            (
-                self._cached_undistortion_map_x,
-                self._cached_undistortion_map_y,
-            ) = cv2.initUndistortRectifyMap(
-                self.k, self.d, None, self._cached_undistorted_model.k, (self.width, self.height), 5
-            )
-
-        return cv2.remap(
-            img, self._cached_undistortion_map_x, self._cached_undistortion_map_y, cv2.INTER_LINEAR
-        )
-
-
-class PolynomialCeresCameraModel(CeresCameraModel):
-    """Polynomial Ceres camera model class."""
-
-    def __init__(
+    def _update_config_impl(
         self,
-        k: Optional[np.array] = None,
-        d: Optional[np.array] = None,
-        height: Optional[int] = None,
-        width: Optional[int] = None,
+        radial_distortion_coefficients: int,
+        rational_distortion_coefficients: int,
+        use_tangential_distortion: bool,
+        **kwargs
     ):
-        super().__init__(k, d, height, width)
-        self.radial_distortion_coefficients = 3
-        self.rational_distortion_coefficients = 0
-        self.use_tangential_distortion = False
-
-    def _init_calibrate_impl(
-        self, object_points_list: List[np.array], image_points_list: List[np.array]
-    ) -> PolynomialOpenCVCameraModel:
-        """Initialize the calibration of the camera model."""
-        camera_model = PolynomialOpenCVCameraModel()
-        camera_model.calibrate(
-            height=self.height,
-            width=self.width,
-            object_points_list=object_points_list,
-            image_points_list=image_points_list,
-        )
-
-        if camera_model.d.size > 5:
-            camera_model.d = camera_model.d.reshape(-1, camera_model.d.size)[:, :5]
-
-        return camera_model
-
-
-class RationalCeresCameraModel(CeresCameraModel):
-    """Polynomial Ceres camera model class."""
-
-    def __init__(
-        self,
-        k: Optional[np.array] = None,
-        d: Optional[np.array] = None,
-        height: Optional[int] = None,
-        width: Optional[int] = None,
-    ):
-        super().__init__(k, d, height, width)
-        self.radial_distortion_coefficients = 3
-        self.rational_distortion_coefficients = 3
-        self.use_tangential_distortion = True
-
-    def _init_calibrate_impl(
-        self, object_points_list: List[np.array], image_points_list: List[np.array]
-    ) -> RationalOpenCVCameraModel:
-        """Initialize the calibration of the camera model."""
-        camera_model = RationalOpenCVCameraModel()
-        camera_model.calibrate(
-            height=self.height,
-            width=self.width,
-            object_points_list=object_points_list,
-            image_points_list=image_points_list,
-        )
-
-        if camera_model.d.size > 8:
-            camera_model.d = camera_model.d.reshape(-1, camera_model.d.size)[:, :8]
-
-        return camera_model
+        """Update parameters."""
+        self.radial_distortion_coefficients = radial_distortion_coefficients
+        self.rational_distortion_coefficients = rational_distortion_coefficients
+        self.use_tangential_distortion = use_tangential_distortion

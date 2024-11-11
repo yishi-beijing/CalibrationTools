@@ -58,3 +58,12 @@ def load_intrinsics(file_path: str):
     camera_model.from_dict(data)
 
     return camera_model
+
+
+def toggle_flag(flags: int, flag: int, state: bool) -> int:
+    """Toogle flag."""
+    if state:
+        flags |= flag
+    else:
+        flags &= ~flag
+    return flags

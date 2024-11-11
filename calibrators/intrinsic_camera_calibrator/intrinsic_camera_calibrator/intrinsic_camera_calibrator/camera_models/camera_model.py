@@ -15,7 +15,6 @@
 # limitations under the License.
 
 from enum import Enum
-import logging
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,11 +25,12 @@ import numpy as np
 
 
 class CameraModelEnum(Enum):
+    OPENCV = {"name": "opencv", "display": "OpenCV"}
+    CERES = {"name": "ceres", "display": "Ceres"}
+
     @classmethod
     def from_name(cls, name: str):
-        """
-        Return the enum member that matches the name.
-        """
+        """Return the enum member that matches the name."""
         for model in cls:
             if model.value["name"] == name:
                 return model
@@ -38,15 +38,11 @@ class CameraModelEnum(Enum):
 
     @classmethod
     def from_index(cls, i: int):
-        """
-        Return the enum member by index.
-        """
+        """Return the enum member by index."""
         return list(cls)[i]
 
     def get_id(self) -> int:
-        """
-        Return the index of the current enum member.
-        """
+        """Return the index of the current enum member."""
         return list(self.__class__).index(self)
 
 
@@ -75,7 +71,7 @@ class CameraModel:
             and self.width == other.width
             and (self.k == other.k).all()
             and (self.d == other.d).all()
-            and type(self) == type(other)
+            and isinstance(self, type(other))
         )
 
     def calibrate(
@@ -89,9 +85,6 @@ class CameraModel:
         assert len(object_points_list) == len(image_points_list)
         self.height = height
         self.width = width
-        logging.warning(
-            f"Camera model: {self.__class__.__name__}"
-        )  # TODO(amadeuszsz): remove before opening PR
         self._calibrate_impl(object_points_list, image_points_list)
 
     def get_pose(
@@ -205,44 +198,48 @@ class CameraModel:
             d["distortion_model"]["rows"], d["distortion_model"]["cols"]
         )
 
+    def update_config(self, **kwargs):
+        """Update the camera model configuration."""
+        self._update_config_impl(**kwargs)
+
+    def _get_undistorted_camera_model_impl(self, alpha: float):
+        """Compute the undistorted version of the camera model."""
+        undistorted_k, _ = cv2.getOptimalNewCameraMatrix(
+            self.k, self.d, (self.width, self.height), alpha
+        )
+
+        return type(self)(
+            k=undistorted_k, d=np.zeros_like(self.d), height=self.height, width=self.width
+        )
+
+    def _rectify_impl(self, img: np.array, alpha=0.0) -> np.array:
+        """Rectifies an image using the current camera model. Alpha is a value in the [0,1] range to regulate how the rectified image is cropped. 0 means that all the pixels in the rectified image are valid whereas 1 keeps all the original pixels from the unrectified image into the rectifies one, filling with zeroes the invalid pixels."""
+        if np.abs(self.d).sum() == 0:
+            return img
+
+        if self._cached_undistorted_model is None or alpha != self._cached_undistortion_alpha:
+            self._cached_undistortion_alpha = alpha
+            self._cached_undistorted_model = self.get_undistorted_camera_model(alpha=alpha)
+            (
+                self._cached_undistortion_map_x,
+                self._cached_undistortion_map_y,
+            ) = cv2.initUndistortRectifyMap(
+                self.k, self.d, None, self._cached_undistorted_model.k, (self.width, self.height), 5
+            )
+
+        return cv2.remap(
+            img, self._cached_undistortion_map_x, self._cached_undistortion_map_y, cv2.INTER_LINEAR
+        )
+
     def _calibrate_impl(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
     ):
         """Abstract method to calibrate the camera model."""
         raise NotImplementedError
 
-    def _get_undistorted_camera_model_impl(self, alpha: float):
-        """Abstract method to compute the undistorted version of the camera model."""
+    def _update_config_impl(self, **kwargs):
+        """Abstract method to update the camera model configuration."""
         raise NotImplementedError
-
-    def _rectify_impl(self, img: np.array, alpha=0.0) -> np.array:
-        """Abstract method to rectify the input image."""
-        raise NotImplementedError
-
-
-####################################################################################################
-# def _calibrate_impl(
-#     self,
-#     object_points_list: List[np.array],
-#     image_points_list: List[np.array]
-# ):
-#     """Calibrate OpenCV camera model."""
-
-#     object_points_list = [
-#         object_points.astype(np.float32).reshape(-1, 3) for object_points in object_points_list
-#     ]
-#     image_points_list = [
-#         image_points.astype(np.float32).reshape(-1, 1, 2) for image_points in image_points_list
-#     ]
-
-#     _, self.k, self.d, rvecs, tvecs = cv2.calibrateCamera(
-#         object_points_list,
-#         image_points_list,
-#         (self.width, self.height),
-#         cameraMatrix=None,
-#         distCoeffs=None
-#     )
-####################################################################################################
 
 
 class CameraModelWithBoardDistortion(CameraModel):

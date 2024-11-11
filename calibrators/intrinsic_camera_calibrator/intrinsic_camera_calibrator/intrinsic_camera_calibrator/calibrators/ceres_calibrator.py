@@ -15,35 +15,44 @@
 # limitations under the License.
 
 
-import logging
 import threading
 from typing import Dict
 from typing import List
+from typing import Tuple
 
-from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
-import cv2
 from intrinsic_camera_calibrator.board_detections.board_detection import BoardDetection
 from intrinsic_camera_calibrator.calibrators.calibrator import Calibrator
-from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_ceres_camera_model
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
+from intrinsic_camera_calibrator.camera_models.camera_model_factory import make_camera_model
 from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModel
-from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
 from intrinsic_camera_calibrator.parameter import Parameter
-import numpy as np
 
 
 class CeresCalibrator(Calibrator):
-    def __init__(
-        self, camera_model_type: CeresCameraModelEnum, lock: threading.RLock, cfg: Dict = {}
-    ):
-        super().__init__(camera_model_type, lock, cfg)
+    def __init__(self, lock: threading.RLock, cfg: Dict = {}):
+        super().__init__(lock, cfg)
+        self.radial_distortion_coefficients = Parameter(int, value=3, min_value=0, max_value=3)
+        self.rational_distortion_coefficients = Parameter(int, value=3, min_value=0, max_value=3)
+        self.use_tangential_distortion = Parameter(
+            bool, value=True, min_value=False, max_value=True
+        )
+
         self.set_parameters(**cfg)
+
+    def get_model_info(self) -> Tuple[Dict, CameraModelEnum]:
+        return self.get_parameters_values(), CameraModelEnum.CERES
 
     def _calibration_impl(self, detections: List[BoardDetection]) -> CeresCameraModel:
         """Implement the calibrator interface."""
         height = detections[0].get_image_height()
         width = detections[0].get_image_width()
 
-        camera_model = make_ceres_camera_model(self.camera_model_type)
+        camera_model = make_camera_model(camera_model_type=CameraModelEnum.CERES)
+        camera_model.update_config(
+            radial_distortion_coefficients=self.radial_distortion_coefficients.value,
+            rational_distortion_coefficients=self.rational_distortion_coefficients.value,
+            use_tangential_distortion=self.use_tangential_distortion.value,
+        )
         camera_model.calibrate(
             height=height,
             width=width,

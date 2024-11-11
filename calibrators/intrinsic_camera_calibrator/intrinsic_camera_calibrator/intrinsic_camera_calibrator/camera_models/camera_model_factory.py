@@ -15,35 +15,16 @@
 # limitations under the License.
 
 
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
+from intrinsic_camera_calibrator.camera_models.camera_model import CameraModelEnum
 from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModel
-from intrinsic_camera_calibrator.camera_models.ceres_camera_model import CeresCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.ceres_camera_model import PolynomialCeresCameraModel
-from intrinsic_camera_calibrator.camera_models.ceres_camera_model import RationalCeresCameraModel
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import (
-    PolynomialOpenCVCameraModel,
-)
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModelEnum
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import PrismOpenCVCameraModel
-from intrinsic_camera_calibrator.camera_models.opencv_camera_model import RationalOpenCVCameraModel
 
 
-def make_opencv_camera_model(
-    camera_model_type: OpenCVCameraModelEnum, **kwargs
-) -> OpenCVCameraModel:
-    """Create a OpenCV camera model using a factory design pattern."""
+def make_camera_model(camera_model_type: CameraModelEnum, **kwargs) -> CameraModel:
+    """Create a camera model using a factory design pattern."""
     classes_dic = {
-        OpenCVCameraModelEnum.OPENCV_POLYNOMIAL: PolynomialOpenCVCameraModel,
-        OpenCVCameraModelEnum.OPENCV_RATIONAL: RationalOpenCVCameraModel,
-        OpenCVCameraModelEnum.OPENCV_PRISM: PrismOpenCVCameraModel,
-    }
-    return classes_dic[camera_model_type](**kwargs)
-
-
-def make_ceres_camera_model(camera_model_type: CeresCameraModelEnum, **kwargs) -> CeresCameraModel:
-    """Create a Ceres camera model using a factory design pattern."""
-    classes_dic = {
-        CeresCameraModelEnum.CERES_POLYNOMIAL: PolynomialCeresCameraModel,
-        CeresCameraModelEnum.CERES_RATIONAL: RationalCeresCameraModel,
+        CameraModelEnum.OPENCV: OpenCVCameraModel,
+        CameraModelEnum.CERES: CeresCameraModel,
     }
     return classes_dic[camera_model_type](**kwargs)
