@@ -42,7 +42,7 @@ class CeresCameraModel(CameraModel):
         self.radial_distortion_coefficients = 3
         self.rational_distortion_coefficients = 3
         self.use_tangential_distortion = True
-        self.opencv_calibration_num_frames = 5
+        self.pre_calibration_num_samples = 6
 
     def init_calibrate(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
@@ -60,7 +60,7 @@ class CeresCameraModel(CameraModel):
             np.linspace(
                 0,
                 len(object_points_list) - 1,
-                np.min([self.opencv_calibration_num_frames, len(object_points_list)]),
+                np.min([self.pre_calibration_num_samples, len(object_points_list)]),
             )
         ).astype(int)
         partial_object_points_list = [object_points_list[i] for i in indices]
@@ -104,11 +104,11 @@ class CeresCameraModel(CameraModel):
         radial_distortion_coefficients: int,
         rational_distortion_coefficients: int,
         use_tangential_distortion: bool,
-        opencv_calibration_num_frames: int,
+        pre_calibration_num_samples: int,
         **kwargs
     ):
         """Update parameters."""
         self.radial_distortion_coefficients = radial_distortion_coefficients
         self.rational_distortion_coefficients = rational_distortion_coefficients
         self.use_tangential_distortion = use_tangential_distortion
-        self.opencv_calibration_num_frames = opencv_calibration_num_frames
+        self.pre_calibration_num_samples = pre_calibration_num_samples
