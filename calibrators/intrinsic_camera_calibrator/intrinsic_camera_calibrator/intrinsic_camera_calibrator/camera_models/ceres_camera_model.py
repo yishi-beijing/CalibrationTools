@@ -14,13 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from typing import List
 from typing import Optional
 
-from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
 import numpy as np
+
+os.environ["GLOG_minloglevel"] = "2"  # supress ceres factorization warnings
+from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import (  # noqa: E402
+    calibrate,
+)
 
 
 class CeresCameraModel(CameraModel):
