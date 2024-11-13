@@ -61,7 +61,6 @@ def load_intrinsics(file_path: str):
 
 
 def toggle_flag(flags: int, flag: int, state: bool) -> int:
-    """Toogle flag."""
     if state:
         flags |= flag
     else:

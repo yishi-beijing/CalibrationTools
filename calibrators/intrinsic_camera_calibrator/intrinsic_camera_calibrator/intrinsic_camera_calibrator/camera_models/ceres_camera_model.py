@@ -22,7 +22,7 @@ from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
 import numpy as np
 
-os.environ["GLOG_minloglevel"] = "2"  # supress ceres factorization warnings
+os.environ["GLOG_minloglevel"] = "2"  # cSpell:ignore minloglevel
 from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import (  # noqa: E402
     calibrate,
 )
