@@ -196,8 +196,6 @@ class Calibrator(ParameterizedClass, QObject):
             training_post_rejection_inliers = calibration_training_detections
             evaluation_post_rejection_inliers = raw_evaluation_detections
 
-        self.model = calibrated_model
-
         num_training_post_rejection_inliers = len(training_post_rejection_inliers)
         num_evaluation_post_rejection_inliers = len(evaluation_post_rejection_inliers)
 
