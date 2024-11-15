@@ -43,6 +43,7 @@ class CeresCameraModel(CameraModel):
         self.rational_distortion_coefficients = 3
         self.use_tangential_distortion = True
         self.pre_calibration_num_samples = 6
+        self.regularization_weight = 0.001
 
     def init_calibrate(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
@@ -93,6 +94,7 @@ class CeresCameraModel(CameraModel):
             num_radial_coeffs=self.radial_distortion_coefficients,
             num_rational_coeffs=self.rational_distortion_coefficients,
             use_tangential_distortion=self.use_tangential_distortion,
+            regularization_weight=self.regularization_weight,
             verbose=False,
         )
 
@@ -105,6 +107,7 @@ class CeresCameraModel(CameraModel):
         rational_distortion_coefficients: int,
         use_tangential_distortion: bool,
         pre_calibration_num_samples: int,
+        regularization_weight: float,
         **kwargs
     ):
         """Update parameters."""
@@ -112,3 +115,4 @@ class CeresCameraModel(CameraModel):
         self.rational_distortion_coefficients = rational_distortion_coefficients
         self.use_tangential_distortion = use_tangential_distortion
         self.pre_calibration_num_samples = pre_calibration_num_samples
+        self.regularization_weight = regularization_weight
