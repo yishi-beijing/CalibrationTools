@@ -76,10 +76,11 @@ struct CoefficientsResidual
 
   /*!
    * Residual factory method
-   * @param[in] object_point The object point
-   * @param[in] image_point The image point
    * @param[in] radial_distortion_coeffs The number of radial distortion coefficients
    * @param[in] use_tangential_distortion Whether to use or not tangential distortion
+   * @param[in] rational_distortion_coeffs The number of rational distortion coefficients
+   * @param[in] num_samples_factor The number of samples used for during optimization
+   * @param[in] regularization_weight The regularization weight for distortion coefficients
    * @returns the ceres residual
    */
   static ceres::CostFunction * createResidual(
