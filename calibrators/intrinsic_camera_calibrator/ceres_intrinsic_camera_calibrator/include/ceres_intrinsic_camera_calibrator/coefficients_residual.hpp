@@ -130,8 +130,6 @@ struct CoefficientsResidual
     return cost_function;
   }
 
-  Eigen::Vector3d object_point_;
-  Eigen::Vector2d image_point_;
   int radial_distortion_coeffs_;
   bool use_tangential_distortion_;
   int rational_distortion_coeffs_;
