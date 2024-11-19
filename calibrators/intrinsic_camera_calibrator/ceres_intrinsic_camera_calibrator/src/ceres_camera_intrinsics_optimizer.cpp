@@ -14,7 +14,7 @@
 
 #include <Eigen/Core>
 #include <ceres_intrinsic_camera_calibrator/ceres_camera_intrinsics_optimizer.hpp>
-#include <ceres_intrinsic_camera_calibrator/coefficients_residual.hpp>
+#include <ceres_intrinsic_camera_calibrator/distortion_coefficients_residual.hpp>
 #include <ceres_intrinsic_camera_calibrator/reprojection_residual.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/core.hpp>
@@ -362,7 +362,7 @@ void CeresCameraIntrinsicsOptimizer::solve()
   }
 
   problem.AddResidualBlock(
-    CoefficientsResidual::createResidual(
+    DistortionCoefficientsResidual::createResidual(
       radial_distortion_coefficients_, use_tangential_distortion_,
       rational_distortion_coefficients_, object_points_.size(), regularization_weight_),
     nullptr,  // L2

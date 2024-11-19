@@ -18,11 +18,11 @@
 #include <ceres/autodiff_cost_function.h>
 #include <ceres/ceres.h>
 
-struct CoefficientsResidual
+struct DistortionCoefficientsResidual
 {
   static constexpr int RESIDUAL_DIM = 8;
 
-  CoefficientsResidual(
+  DistortionCoefficientsResidual(
     int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs,
     int num_samples_factor, double regularization_weight)
   {
@@ -84,7 +84,7 @@ struct CoefficientsResidual
     int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs,
     int num_samples_factor, double regularization_weight)
   {
-    auto f = new CoefficientsResidual(
+    auto f = new DistortionCoefficientsResidual(
       radial_distortion_coeffs, use_tangential_distortion, rational_distortion_coeffs,
       num_samples_factor, regularization_weight);
 
@@ -95,31 +95,31 @@ struct CoefficientsResidual
 
     switch (distortion_coefficients) {
       case 0:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 4>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 4>(f);
         break;
       case 1:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 5>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 5>(f);
         break;
       case 2:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 6>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 6>(f);
         break;
       case 3:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 7>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 7>(f);
         break;
       case 4:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 8>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 8>(f);
         break;
       case 5:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 9>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 9>(f);
         break;
       case 6:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 10>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 10>(f);
         break;
       case 7:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 11>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 11>(f);
         break;
       case 8:
-        cost_function = new ceres::AutoDiffCostFunction<CoefficientsResidual, RESIDUAL_DIM, 12>(f);
+        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 12>(f);
         break;
       default:
         throw std::runtime_error("Invalid number of distortion coefficients");
