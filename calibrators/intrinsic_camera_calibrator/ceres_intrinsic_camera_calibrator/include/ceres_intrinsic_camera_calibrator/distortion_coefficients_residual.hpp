@@ -59,14 +59,14 @@ struct DistortionCoefficientsResidual
     const T & k6 =
       rational_distortion_coeffs_ > 2 ? camera_intrinsics[distortion_index++] : null_value;
 
-    residuals[0] = num_samples_factor_ * regularization_weight_ * pow(k1, 2);
-    residuals[1] = num_samples_factor_ * regularization_weight_ * pow(k2, 2);
-    residuals[2] = num_samples_factor_ * regularization_weight_ * pow(k3, 2);
-    residuals[3] = num_samples_factor_ * regularization_weight_ * pow(p1, 2);
-    residuals[4] = num_samples_factor_ * regularization_weight_ * pow(p2, 2);
-    residuals[5] = num_samples_factor_ * regularization_weight_ * pow(k4, 2);
-    residuals[6] = num_samples_factor_ * regularization_weight_ * pow(k5, 2);
-    residuals[7] = num_samples_factor_ * regularization_weight_ * pow(k6, 2);
+    residuals[0] = num_samples_factor_ * regularization_weight_ * k1;
+    residuals[1] = num_samples_factor_ * regularization_weight_ * k2;
+    residuals[2] = num_samples_factor_ * regularization_weight_ * k3;
+    residuals[3] = num_samples_factor_ * regularization_weight_ * p1;
+    residuals[4] = num_samples_factor_ * regularization_weight_ * p2;
+    residuals[5] = num_samples_factor_ * regularization_weight_ * k4;
+    residuals[6] = num_samples_factor_ * regularization_weight_ * k5;
+    residuals[7] = num_samples_factor_ * regularization_weight_ * k6;
 
     return true;
   }
