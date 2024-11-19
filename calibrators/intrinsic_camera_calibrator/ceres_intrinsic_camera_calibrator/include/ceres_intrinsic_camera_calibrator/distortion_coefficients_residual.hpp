@@ -23,14 +23,11 @@ struct DistortionCoefficientsResidual
   static constexpr int RESIDUAL_DIM = 8;
 
   DistortionCoefficientsResidual(
-    int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs,
-    int num_samples_factor, double regularization_weight)
+    int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs)
   {
     radial_distortion_coeffs_ = radial_distortion_coeffs;
     use_tangential_distortion_ = use_tangential_distortion;
     rational_distortion_coeffs_ = rational_distortion_coeffs;
-    num_samples_factor_ = num_samples_factor;
-    regularization_weight_ = regularization_weight;
   }
 
   /*!
@@ -59,14 +56,14 @@ struct DistortionCoefficientsResidual
     const T & k6 =
       rational_distortion_coeffs_ > 2 ? camera_intrinsics[distortion_index++] : null_value;
 
-    residuals[0] = num_samples_factor_ * regularization_weight_ * k1;
-    residuals[1] = num_samples_factor_ * regularization_weight_ * k2;
-    residuals[2] = num_samples_factor_ * regularization_weight_ * k3;
-    residuals[3] = num_samples_factor_ * regularization_weight_ * p1;
-    residuals[4] = num_samples_factor_ * regularization_weight_ * p2;
-    residuals[5] = num_samples_factor_ * regularization_weight_ * k4;
-    residuals[6] = num_samples_factor_ * regularization_weight_ * k5;
-    residuals[7] = num_samples_factor_ * regularization_weight_ * k6;
+    residuals[0] = k1;
+    residuals[1] = k2;
+    residuals[2] = k3;
+    residuals[3] = p1;
+    residuals[4] = p2;
+    residuals[5] = k4;
+    residuals[6] = k5;
+    residuals[7] = k6;
 
     return true;
   }
@@ -76,17 +73,13 @@ struct DistortionCoefficientsResidual
    * @param[in] radial_distortion_coeffs The number of radial distortion coefficients
    * @param[in] use_tangential_distortion Whether to use or not tangential distortion
    * @param[in] rational_distortion_coeffs The number of rational distortion coefficients
-   * @param[in] num_samples_factor The number of samples used for during optimization
-   * @param[in] regularization_weight The regularization weight for distortion coefficients
    * @returns the ceres residual
    */
   static ceres::CostFunction * createResidual(
-    int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs,
-    int num_samples_factor, double regularization_weight)
+    int radial_distortion_coeffs, bool use_tangential_distortion, int rational_distortion_coeffs)
   {
     auto f = new DistortionCoefficientsResidual(
-      radial_distortion_coeffs, use_tangential_distortion, rational_distortion_coeffs,
-      num_samples_factor, regularization_weight);
+      radial_distortion_coeffs, use_tangential_distortion, rational_distortion_coeffs);
 
     int distortion_coefficients = radial_distortion_coeffs +
                                   2 * static_cast<int>(use_tangential_distortion) +
@@ -131,8 +124,6 @@ struct DistortionCoefficientsResidual
   int radial_distortion_coeffs_;
   bool use_tangential_distortion_;
   int rational_distortion_coeffs_;
-  int num_samples_factor_;
-  double regularization_weight_;
 };
 
 #endif  // CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_

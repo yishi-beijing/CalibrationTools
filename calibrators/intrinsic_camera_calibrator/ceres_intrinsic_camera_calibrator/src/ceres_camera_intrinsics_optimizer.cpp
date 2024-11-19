@@ -364,8 +364,9 @@ void CeresCameraIntrinsicsOptimizer::solve()
   problem.AddResidualBlock(
     DistortionCoefficientsResidual::createResidual(
       radial_distortion_coefficients_, use_tangential_distortion_,
-      rational_distortion_coefficients_, object_points_.size(), regularization_weight_),
-    nullptr,  // L2
+      rational_distortion_coefficients_),
+    new ceres::ScaledLoss(
+      nullptr, regularization_weight_ * object_points_.size(), ceres::TAKE_OWNERSHIP),  // L2
     intrinsics_placeholder_.data());
 
   double initial_cost = 0.0;
