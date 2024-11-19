@@ -93,10 +93,4 @@ class ParameterizedClass:
     def get_parameters_values(self) -> dict:
         """Return the values of the Parameter objects from this class as a dictionary."""
         with self.lock:
-            p_dict = {}
-
-            for k, v in vars(self).items():
-                if isinstance(v, Parameter):
-                    p_dict[k] = v.value
-
-            return p_dict
+            return {k: v.value for k, v in self.parameters().items()}
