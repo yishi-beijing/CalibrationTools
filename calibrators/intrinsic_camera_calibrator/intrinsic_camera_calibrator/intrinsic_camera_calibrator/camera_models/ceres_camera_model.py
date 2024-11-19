@@ -39,11 +39,11 @@ class CeresCameraModel(CameraModel):
         width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
-        self.radial_distortion_coefficients = 3
-        self.rational_distortion_coefficients = 3
-        self.use_tangential_distortion = True
-        self.pre_calibration_num_samples = 6
-        self.regularization_weight = 0.001
+        self.radial_distortion_coefficients: int = None
+        self.rational_distortion_coefficients: int = None
+        self.use_tangential_distortion: bool = None
+        self.pre_calibration_num_samples: int = None
+        self.regularization_weight: float = None
 
     def init_calibrate(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
