@@ -15,9 +15,6 @@
 #ifndef CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_
 #define CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_
 
-#include <Eigen/Core>
-#include <opencv2/core.hpp>
-
 #include <ceres/autodiff_cost_function.h>
 #include <ceres/ceres.h>
 
