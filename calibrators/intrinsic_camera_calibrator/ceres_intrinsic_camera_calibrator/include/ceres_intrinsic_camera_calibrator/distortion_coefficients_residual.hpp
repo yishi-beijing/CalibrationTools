@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_
-#define CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_
+#ifndef CERES_INTRINSIC_CAMERA_CALIBRATOR__DISTORTION_COEFFICIENTS_RESIDUAL_HPP_
+#define CERES_INTRINSIC_CAMERA_CALIBRATOR__DISTORTION_COEFFICIENTS_RESIDUAL_HPP_
 
 #include <ceres/autodiff_cost_function.h>
 #include <ceres/ceres.h>
@@ -88,31 +88,40 @@ struct DistortionCoefficientsResidual
 
     switch (distortion_coefficients) {
       case 0:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 4>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 4>(f);
         break;
       case 1:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 5>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 5>(f);
         break;
       case 2:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 6>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 6>(f);
         break;
       case 3:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 7>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 7>(f);
         break;
       case 4:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 8>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 8>(f);
         break;
       case 5:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 9>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 9>(f);
         break;
       case 6:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 10>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 10>(f);
         break;
       case 7:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 11>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 11>(f);
         break;
       case 8:
-        cost_function = new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 12>(f);
+        cost_function =
+          new ceres::AutoDiffCostFunction<DistortionCoefficientsResidual, RESIDUAL_DIM, 12>(f);
         break;
       default:
         throw std::runtime_error("Invalid number of distortion coefficients");
@@ -126,4 +135,4 @@ struct DistortionCoefficientsResidual
   int rational_distortion_coeffs_;
 };
 
-#endif  // CERES_INTRINSIC_CAMERA_CALIBRATOR__COEFFICIENTS_RESIDUAL_HPP_
+#endif  // CERES_INTRINSIC_CAMERA_CALIBRATOR__DISTORTION_COEFFICIENTS_RESIDUAL_HPP_
