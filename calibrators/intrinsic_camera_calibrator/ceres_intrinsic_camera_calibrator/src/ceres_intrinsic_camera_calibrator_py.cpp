@@ -184,7 +184,7 @@ PYBIND11_MODULE(ceres_intrinsic_camera_calibrator_py, m)
             num_radial_coeffs (int): The number of radial distortion coefficients used during calibration
             num_rational_coeffs (int): The number of rational distortion coefficients used during calibration
             use_tangential_distortion (bool): Whether we should use tangential distortion during calibration
-            regularization_weight (float): The regularization weight for distortion coefficients
+            regularization_weight (double): The regularization weight for distortion coefficients
             verbose (bool): Whether we should print debug information
 
         Returns:
