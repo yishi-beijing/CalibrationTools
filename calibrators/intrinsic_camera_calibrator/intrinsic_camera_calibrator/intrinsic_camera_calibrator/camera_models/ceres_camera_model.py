@@ -35,11 +35,11 @@ class CeresCameraModel(CameraModel):
         width: Optional[int] = None,
     ):
         super().__init__(k, d, height, width)
-        self.radial_distortion_coefficients: int = None
-        self.rational_distortion_coefficients: int = None
-        self.use_tangential_distortion: bool = None
-        self.pre_calibration_num_samples: int = None
-        self.regularization_weight: float = None
+        self.radial_distortion_coefficients: Optional[int] = None
+        self.rational_distortion_coefficients: Optional[int] = None
+        self.use_tangential_distortion: Optional[bool] = None
+        self.pre_calibration_num_samples: Optional[int] = None
+        self.regularization_weight: Optional[float] = None
         self.verbose = (
             True if os.getenv("GLOG_minloglevel") == "0" else False
         )  # cSpell:ignore minloglevel
