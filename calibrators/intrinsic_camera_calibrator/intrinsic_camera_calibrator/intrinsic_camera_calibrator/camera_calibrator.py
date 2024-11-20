@@ -655,8 +655,7 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
         self.data_source = data_source
         self.board_type = board_type
         self.board_parameters = board_parameters
-        if initial_intrinsics is not None:
-            self.current_camera_model = initial_intrinsics
+        self.current_camera_model = initial_intrinsics
         self.setEnabled(True)
 
         self.setWindowTitle(f"Camera intrinsics calibrator ({self.data_source.get_camera_name()})")
