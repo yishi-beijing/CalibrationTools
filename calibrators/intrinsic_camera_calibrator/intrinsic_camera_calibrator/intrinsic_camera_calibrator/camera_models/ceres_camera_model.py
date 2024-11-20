@@ -40,7 +40,9 @@ class CeresCameraModel(CameraModel):
         self.use_tangential_distortion: bool = None
         self.pre_calibration_num_samples: int = None
         self.regularization_weight: float = None
-        self.verbose = True if os.getenv("GLOG_minloglevel") == "0" else False
+        self.verbose = (
+            True if os.getenv("GLOG_minloglevel") == "0" else False
+        )  # cSpell:ignore minloglevel
 
     def init_calibrate(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
