@@ -168,7 +168,7 @@ class BoardDetection:
     def get_flattened_3d_points(self, model: CameraModel) -> np.array:
         """Get the image points reprojected into camera coordinates in the 3d space as a (M, 3) array."""
         if model == self._cached_camera_model and self._cached_flattened_3d_points is not None:
-            return self._cached_pose
+            return self._cached_flattened_3d_points
 
         self._cached_camera_model = model
 
