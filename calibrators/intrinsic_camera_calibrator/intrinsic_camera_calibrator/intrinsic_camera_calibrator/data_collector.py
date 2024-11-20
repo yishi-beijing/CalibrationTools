@@ -242,7 +242,7 @@ class DataCollector(ParameterizedClass):
 
         # Other criteria for new samples is using 3d statistics
         # They have the advantage of considering the different out-of-plane rotations instead of a single scalar (e.g., differentiation of left and right rotations)
-        self.filter_by_3d_redundancy = Parameter(bool, value=True, min_value=False, max_value=True)
+        self.filter_by_3d_redundancy = Parameter(bool, value=False, min_value=False, max_value=True)
         self.min_3d_center_difference = Parameter(float, value=1.0, min_value=0.1, max_value=100.0)
         self.min_tilt_difference = Parameter(float, value=15.0, min_value=0.0, max_value=90)
 
