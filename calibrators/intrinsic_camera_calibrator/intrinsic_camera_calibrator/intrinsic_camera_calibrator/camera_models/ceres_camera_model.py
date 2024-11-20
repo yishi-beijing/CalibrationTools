@@ -85,7 +85,7 @@ class CeresCameraModel(CameraModel):
         """Calibrate Ceres camera model."""
         camera_model = self.init_calibrate(object_points_list, image_points_list)
 
-        rms_error, camera_matrix, dist_coeffs, rvecs, tvecs = calibrate(
+        _, camera_matrix, dist_coeffs, _, _ = calibrate(
             object_points_list=object_points_list,
             image_points_list=image_points_list,
             initial_camera_matrix=camera_model.k,
