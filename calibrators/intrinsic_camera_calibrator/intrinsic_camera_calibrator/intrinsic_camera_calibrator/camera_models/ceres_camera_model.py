@@ -18,14 +18,10 @@ import os
 from typing import List
 from typing import Optional
 
+from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import calibrate
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 from intrinsic_camera_calibrator.camera_models.opencv_camera_model import OpenCVCameraModel
 import numpy as np
-
-os.environ["GLOG_minloglevel"] = "2"  # cSpell:ignore minloglevel
-from ceres_intrinsic_camera_calibrator.ceres_intrinsic_camera_calibrator_py import (  # noqa: E402
-    calibrate,
-)
 
 
 class CeresCameraModel(CameraModel):
@@ -44,6 +40,7 @@ class CeresCameraModel(CameraModel):
         self.use_tangential_distortion: bool = None
         self.pre_calibration_num_samples: int = None
         self.regularization_weight: float = None
+        self.verbose = True if os.getenv("GLOG_minloglevel") == "0" else False
 
     def init_calibrate(
         self, object_points_list: List[np.array], image_points_list: List[np.array]
@@ -95,7 +92,7 @@ class CeresCameraModel(CameraModel):
             num_rational_coeffs=self.rational_distortion_coefficients,
             use_tangential_distortion=self.use_tangential_distortion,
             regularization_weight=self.regularization_weight,
-            verbose=False,
+            verbose=self.verbose,
         )
 
         self.k = camera_matrix
