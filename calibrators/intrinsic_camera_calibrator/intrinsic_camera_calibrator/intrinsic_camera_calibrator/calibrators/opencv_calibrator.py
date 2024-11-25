@@ -33,12 +33,12 @@ class OpenCVCalibrator(Calibrator):
 
     def __init__(self, lock: threading.RLock, cfg: Dict = {}):
         super().__init__(lock, cfg)
-        self.radial_distortion_coefficients = Parameter(int, value=3, min_value=0, max_value=3)
-        self.rational_distortion_coefficients = Parameter(int, value=3, min_value=0, max_value=3)
+        self.radial_distortion_coefficients = Parameter(int, value=2, min_value=0, max_value=3)
+        self.rational_distortion_coefficients = Parameter(int, value=0, min_value=0, max_value=3)
         self.use_tangential_distortion = Parameter(
             bool, value=True, min_value=False, max_value=True
         )
-        self.enable_prism_model = Parameter(bool, value=True, min_value=False, max_value=True)
+        self.enable_prism_model = Parameter(bool, value=False, min_value=False, max_value=True)
         self.fix_principal_point = Parameter(bool, value=False, min_value=False, max_value=True)
         self.fix_aspect_ratio = Parameter(bool, value=False, min_value=False, max_value=True)
 
