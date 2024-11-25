@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+import os
+
 import cv2
 from intrinsic_camera_calibrator.camera_models.camera_model import CameraModel
 import numpy as np
@@ -66,3 +69,16 @@ def toggle_flag(flags: int, flag: int, state: bool) -> int:
     else:
         flags &= ~flag
     return flags
+
+
+def set_logger_severity():
+    severity = os.getenv("GLOG_minloglevel")
+    if severity is None:
+        return
+    mapping = {
+        "0": logging.INFO,
+        "1": logging.WARNING,
+        "2": logging.ERROR,
+        "3": logging.CRITICAL,
+    }
+    logging.basicConfig(level=mapping.get(severity, logging.INFO))

@@ -63,6 +63,7 @@ from intrinsic_camera_calibrator.parameter import ParameterizedClass
 from intrinsic_camera_calibrator.types import ImageViewMode
 from intrinsic_camera_calibrator.types import OperationMode
 from intrinsic_camera_calibrator.utils import save_intrinsics
+from intrinsic_camera_calibrator.utils import set_logger_severity
 from intrinsic_camera_calibrator.views.data_collector_view import DataCollectorView
 from intrinsic_camera_calibrator.views.image_view import CustomQGraphicsView
 from intrinsic_camera_calibrator.views.image_view import ImageView
@@ -1122,6 +1123,7 @@ class CameraIntrinsicsCalibratorUI(QMainWindow):
 
 
 def main(args=None):
+    set_logger_severity()
     parser = OptionParser()
     parser.add_option("-c", "--config-file", type="string", help="calibration file path")
 
