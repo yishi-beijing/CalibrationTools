@@ -45,7 +45,8 @@ class OpenCVCalibrator(Calibrator):
         self.set_parameters(**cfg)
 
     def get_model_info(self) -> Tuple[Dict, CameraModelEnum]:
-        return self.get_parameters_values(), CameraModelEnum.OPENCV
+        with self.lock:
+            return self.get_parameters_values(), CameraModelEnum.OPENCV
 
     def _calibration_impl(self, detections: List[BoardDetection]) -> OpenCVCameraModel:
         """Implement the calibrator interface."""
@@ -53,14 +54,15 @@ class OpenCVCalibrator(Calibrator):
         width = detections[0].get_image_width()
 
         camera_model = make_camera_model(camera_model_type=CameraModelEnum.OPENCV)
-        camera_model.update_config(
-            radial_distortion_coefficients=self.radial_distortion_coefficients.value,
-            rational_distortion_coefficients=self.rational_distortion_coefficients.value,
-            use_tangential_distortion=self.use_tangential_distortion.value,
-            enable_prism_model=self.enable_prism_model.value,
-            fix_principal_point=self.fix_principal_point.value,
-            fix_aspect_ratio=self.fix_aspect_ratio.value,
-        )
+        with self.lock:
+            camera_model.update_config(
+                radial_distortion_coefficients=self.radial_distortion_coefficients.value,
+                rational_distortion_coefficients=self.rational_distortion_coefficients.value,
+                use_tangential_distortion=self.use_tangential_distortion.value,
+                enable_prism_model=self.enable_prism_model.value,
+                fix_principal_point=self.fix_principal_point.value,
+                fix_aspect_ratio=self.fix_aspect_ratio.value,
+            )
         camera_model.calibrate(
             height=height,
             width=width,

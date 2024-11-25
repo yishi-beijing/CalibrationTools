@@ -42,7 +42,8 @@ class CeresCalibrator(Calibrator):
         self.set_parameters(**cfg)
 
     def get_model_info(self) -> Tuple[Dict, CameraModelEnum]:
-        return self.get_parameters_values(), CameraModelEnum.CERES
+        with self.lock:
+            return self.get_parameters_values(), CameraModelEnum.CERES
 
     def _calibration_impl(self, detections: List[BoardDetection]) -> CeresCameraModel:
         """Implement the calibrator interface."""
@@ -50,13 +51,14 @@ class CeresCalibrator(Calibrator):
         width = detections[0].get_image_width()
 
         camera_model = make_camera_model(camera_model_type=CameraModelEnum.CERES)
-        camera_model.update_config(
-            radial_distortion_coefficients=self.radial_distortion_coefficients.value,
-            rational_distortion_coefficients=self.rational_distortion_coefficients.value,
-            use_tangential_distortion=self.use_tangential_distortion.value,
-            pre_calibration_num_samples=self.pre_calibration_num_samples.value,
-            regularization_weight=self.regularization_weight.value,
-        )
+        with self.lock:
+            camera_model.update_config(
+                radial_distortion_coefficients=self.radial_distortion_coefficients.value,
+                rational_distortion_coefficients=self.rational_distortion_coefficients.value,
+                use_tangential_distortion=self.use_tangential_distortion.value,
+                pre_calibration_num_samples=self.pre_calibration_num_samples.value,
+                regularization_weight=self.regularization_weight.value,
+            )
         camera_model.calibrate(
             height=height,
             width=width,
