@@ -72,7 +72,7 @@ def toggle_flag(flags: int, flag: int, state: bool) -> int:
 
 
 def set_logger_severity():
-    severity = os.getenv("GLOG_minloglevel")
+    severity = os.getenv("GLOG_minloglevel")  # cSpell:ignore minloglevel
     if severity is None:
         return
     mapping = {
