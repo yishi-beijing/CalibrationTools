@@ -31,7 +31,6 @@ from intrinsic_camera_calibrator.parameter import Parameter
 class CeresCalibrator(Calibrator):
     def __init__(self, lock: threading.RLock, cfg: Dict = {}):
         super().__init__(lock, cfg)
-        self.max_calibration_samples.value = 500
         self.radial_distortion_coefficients = Parameter(int, value=2, min_value=0, max_value=3)
         self.rational_distortion_coefficients = Parameter(int, value=0, min_value=0, max_value=3)
         self.use_tangential_distortion = Parameter(
