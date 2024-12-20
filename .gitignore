@@ -7,12 +7,4 @@ build/
 install/
 log/
 
-# Python
-*.pyc
-*.pyo
-__pycache__/
 
-
-venv/
-
-*.log
