@@ -1,0 +1,89 @@
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --parallel-workers 4
+
+ros2 launch autoware_launch planning_simulator.launch.xml map_path:=$HOME/autoware_map/sample-map-planning vehicle_model:=sample_vehicle sensor_model:=private_hw_sensor_kit
+
+ros2 launch autoware_launch autoware.launch.xml map_path:=$HOME/autoware_map/sample-map-planning vehicle_model:=sample_vehicle sensor_model:=private_hw_sensor_kit
+
+source ~/anaconda3/bin/activate
+
+./opt/pycharm-2024.1.4/bin/pycharm.sh
+
+python demo/pcd_demo.py demo/data/nuscenes/n015-2018-07-24-11-22-45+0800__LIDAR_TOP__1532402927647951.pcd.bin projects/AutowareCenterPoint/configs/centerpoint_custom_cone.py work_dirs/centerpoint_custom_cone/epoch_1.pth --print-result --show
+
+python tools/train.py projects/AutowareCenterPoint/configs/centerpoint_custom_cone.py --work-dir ./work_dirs/centerpoint_custom_cone --resume auto
+
+ros2 launch lio_sam run.launch.py
+
+ros2 bag play ~/lio-sam-ws/rosbag2_2024_05_24-18_35_49
+
+ros2 service call /lio_sam/save_map lio_sam/srv/SaveMap "{resolution: 0.2, destination: '/lio-sam-ws/outputs'}"
+
+
+        Node(
+            package='robot_localization',
+            executable='navsat_transform_node',
+            name='navsat',
+            output='screen'
+        ),
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_gps',
+            output='screen'
+        )
+        
+        
+        export ROS_DOMAIN_ID=1
+        
+        ros-humble-robot-localization
+        
+ros2 run tf2_ros tf2_monitor
+
+colcon build --symlink-install
+
+colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release --packages-select crop_upper_space_filter
+
+ros2 launch autoware_launch tier4_perception_component.launch.xml vehicle_model:=~/work_dir/autoware/src/vehicle/perception_vehicle_launch perception_mode:=lidar
+
+ros2 launch robot_localization ekf.launch.py
+
+ros2 launch autoware_launch tier4_perception_component.launch.xml vehicle_model:=perception_vehicle perception_mode:=lidar
+
+
+ros2 launch autoware_launch autoware.launch.xml map_path:=~/autoware_map/sample-map-planning/ vehicle_model:=perception_vehicle      launch_localization:=false     launch_planning:=false     launch_control:=false
+
+ros2 launch autoware_launch autoware.launch.xml vehicle_model:=private_hw_vehicle sensor_model:=private_hw_sensor_kit map_path:=$HOME/autoware_map/map704
+
+ros2 launch autoware_launch autoware.launch.xml vehicle_model:=private_hw_vehicle sensor_model:=private_hw_sensor_kit map_path:=$HOME/autoware_map/map704 launch_sensing:=false launch_control:=false
+
+ros2 launch autoware_launch autoware.launch.xml vehicle_model:=private_hw_vehicle sensor_model:=private_hw_sensor_kit map_path:=$HOME/autoware_map/map704 perception_mode:=camera_lidar_fusion image_number:=1
+
+ros2 launch intrinsic_camera_calibrator calibrator.launch.xml
+
+ros2 launch my_libas_cam lbas_cam_camera_0.launch.py
+
+
+#OA-LICalib
+export REPO_PATH="/home/lance/work_dir/autoware/OA-LICalib"
+docker run -it --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --volume="$REPO_PATH:/root/catkin_oa_calib/src/OA-LICalib" calib:v1 bash
+cd catkin_oa_calib/
+catkin_make -DCATKIN_WHITELIST_PACKAGES=""
+source ./devel/setup.bash
+roslaunch oa_licalib li_calib.launch
+
+
+docker run --privileged -it            -e NVIDIA_DRIVER_CAPABILITIES=all            -e NVIDIA_VISIBLE_DEVICES=all            --volume=/home/lance/work_dir/LiDAR_IMU_Init:/home/catkin_ws/src            --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw            --net=host            --ipc=host            --shm-size=1gb            --name=calib            --env="DISPLAY=$DISPLAY"            li_init:1.0 /bin/bash
+
+
+
+docker run --privileged -it            -e NVIDIA_DRIVER_CAPABILITIES=all            -e NVIDIA_VISIBLE_DEVICES=all            --volume=/home/lance/work_dir/LiDAR_IMU_Init:/home/catkin_ws/src            --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw            --net=host            --ipc=host            --shm-size=1gb      --rm --runtime=nvidia --gpus all      --name=calib-gpu            --env="DISPLAY=$DISPLAY"            li_init:1.0 /bin/bash
+
+docker run -it --env="DISPLAY" -e NVIDIA_DRIVER_CAPABILITIES=all            -e NVIDIA_VISIBLE_DEVICES=all --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" --volume="$REPO_PATH:/root/catkin_oa_calib/src/OA-LICalib" calib:v1 bash
+
+docker exec -it calib-gpu /bin/bash
+
+//interactiv
+ros2 launch extrinsic_calibration_manager calibration.launch.xml mode:=interactive sensor_model:=private_hw_sensor_kit vehicle_model:=private_hw_vehicle vehicle_id:=default camera_name:=camera0
+
+ros2 launch extrinsic_calibration_manager calibration.launch.xml mode:=manual sensor_model:=private_hw_sensor_kit vehicle_model:=private_hw_vehicle vehicle_id:=default

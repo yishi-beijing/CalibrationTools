@@ -1,4 +1,0 @@
-geometry_msgs/TransformStamped transform_stamped
-bool success
-float32 score
-std_msgs/String message
